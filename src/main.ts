@@ -12,6 +12,7 @@ import './styles/overlays.css';
 
 import { gsap } from 'gsap';
 import { renderSections, COPY_HINT } from './ui/Sections';
+import { stepInner, chamberStep } from './core/steps';
 import { Scroll } from './core/Scroll';
 import { getQuality, supportsWebGL } from './core/Quality';
 import { Intro } from './ui/Intro';
@@ -25,8 +26,9 @@ import { loadMemory, saveMemory, hueShiftFor } from './ui/Memory';
 import { observeTerminal } from './ui/Terminal';
 import { ShapeNotes } from './ui/ShapeNotes';
 import { StarLabels } from './ui/StarLabels';
-import { stages, experiments } from './content/resume';
+import { stages, experiments, skillGroups, about } from './content/resume';
 import type { Experience } from './core/Experience';
+import { EXPERIMENT_SHAPES } from './core/ShapeDirector';
 
 // Tell the index.html safety net we're alive (it shows a plain page if this never runs).
 (window as unknown as { __labStarted: boolean }).__labStarted = true;
@@ -42,6 +44,7 @@ const webgl = supportsWebGL();
 if (!webgl) root.classList.add('no-webgl');
 
 const scroll = new Scroll(sections, !reduced);
+scroll.enableSnap({ evolution: stages.length, experiments: experiments.length, toolkit: skillGroups.length, about: about.interests.length });
 window.scrollTo(0, 0);
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
@@ -127,10 +130,10 @@ function fallbackState() {
   const id = sections[f.index]?.id;
   const inner = (name: string) => (id === name ? f.inner : sections.findIndex((s) => s.id === name) < f.index ? 1 : 0);
   return {
-    stage: inner('evolution') * (stages.length - 1),
-    experiment: inner('experiments') * (experiments.length - 1),
-    cluster: fallbackOverrides.cluster >= 0 ? fallbackOverrides.cluster : Math.round(inner('toolkit') * (tkGroups.length - 1)),
-    interest: fallbackOverrides.interest >= 0 ? fallbackOverrides.interest : Math.round(inner('about') * (abItems.length - 1)),
+    stage: chamberStep(inner('evolution'), stages.length),
+    experiment: chamberStep(inner('experiments'), experiments.length),
+    cluster: fallbackOverrides.cluster >= 0 ? fallbackOverrides.cluster : Math.round(chamberStep(inner('toolkit'), tkGroups.length)),
+    interest: fallbackOverrides.interest >= 0 ? fallbackOverrides.interest : Math.round(chamberStep(inner('about'), abItems.length)),
   };
 }
 
@@ -246,9 +249,7 @@ const expSection = document.getElementById('experiments')!;
 function scrollToStep(id: string, i: number, count: number) {
   const m = scroll.metrics.find((x) => x.id === id)!;
   const span = m.exit - m.enter;
-  // Inverse of chamberStep: inner = (x + 0.15) / (n - 1 + 0.6)
-  const inner = (i + 0.15) / (count - 1 + 0.6);
-  scroll.scrollTo(m.enter + Math.min(1, inner) * span + 2);
+  scroll.scrollTo(m.enter + stepInner(i, count) * span + 2);
 }
 expSection.addEventListener('click', (e) => {
   const t = e.target as HTMLElement;
@@ -257,11 +258,25 @@ expSection.addEventListener('click', (e) => {
   const jump = t.closest<HTMLElement>('[data-jump]');
   if (jump) return scrollToStep('experiments', Number(jump.dataset.jump), experiments.length);
 });
+let reportFrom = -1;
 report.onOpenChange = (open) => {
   // The dialog sits in the top layer; take the cursor with it.
   cursor.mountIn(open ? document.querySelector<HTMLElement>('dialog.report') : null);
-  if (open) scroll.stop();
-  else scroll.start();
+  if (open) {
+    reportFrom = Math.round(exp?.state.experiment ?? 0);
+    scroll.stop();
+    return;
+  }
+  const last = report.current;
+  exp?.setFocus('');
+  scroll.start();
+  // Browsed to another project inside the report: bring the page along so it matches.
+  if (last >= 0 && last !== reportFrom) scrollToStep('experiments', last, experiments.length);
+};
+// The project's particle shape sits beside the report while it's open.
+report.onShow = (i) => {
+  exp?.setFocus(EXPERIMENT_SHAPES[experiments[i].kind]);
+  audio.blip(660 + i * 60);
 };
 
 // Toolkit + About: hover/focus an item to take its shape.

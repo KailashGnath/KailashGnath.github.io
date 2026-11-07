@@ -10,7 +10,7 @@ export interface DirectorState {
 
 const STAGE_SHAPES = ['db', 'phoneList', 'layers', 'twoPhones'];
 
-const EXPERIMENT_SHAPES: Record<ExperimentKind, string> = {
+export const EXPERIMENT_SHAPES: Record<ExperimentKind, string> = {
   transit: 'pin',
   video: 'play',
   fitness: 'dumbbell',

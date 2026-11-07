@@ -15,25 +15,9 @@ export interface Shot {
   frameY: number;
 }
 
-/** Holds on each integer, eases quickly between them: 0 → 1 → 2 … */
-export function stair(x: number) {
-  const k = Math.floor(x);
-  const f = x - k;
-  return k + smoothstep(0.32, 0.68, f);
-}
-
-export function smoothstep(a: number, b: number, x: number) {
-  const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
-  return t * t * (3 - 2 * t);
-}
+export { stair, smoothstep, chamberStep, stepInner, SCREENS_PER_ITEM } from './steps';
 
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-
-/** Maps 0..1 inside a chamber to a 0..(steps-1) value with plateaus at both ends. */
-export function chamberStep(inner: number, steps: number) {
-  const span = steps - 1;
-  return Math.min(span, Math.max(0, inner * (span + 0.6) - 0.15));
-}
 
 export const STATION_GAP = 26;
 const ORDER = ['hero', 'evolution', 'experiments', 'toolkit', 'about', 'credentials', 'evolving', 'contact'];
@@ -86,6 +70,8 @@ export class CameraRig {
   current = blankShot();
   /** When set, overrides the scroll-driven shot (used by the intro). */
   override: Shot | null = null;
+  /** A lab report is open: frame the swarm in the space beside it. */
+  focus = false;
   /** World-space point the swarm rides at, and its velocity (units/s). */
   readonly anchor = new THREE.Vector3();
   readonly anchorVel = new THREE.Vector3();
@@ -119,6 +105,18 @@ export class CameraRig {
       if (portrait) this.target.opacity *= 1 - 0.82 * Math.sin(Math.PI * frame.t);
     } else {
       lerpShot(a, a, 0, this.target);
+    }
+    if (this.focus) {
+      // Desktop: the report covers the right side, so the subject moves into the open left half.
+      // Phone: the report is a bottom sheet, so the subject rises into the strip above it.
+      const t = this.target;
+      t.opacity = 1;
+      // Centre of the free half: the report is min(720px, 100vw) wide on the right.
+      const free = Math.max(0.3, 1 - 720 / window.innerWidth);
+      t.frameX = portrait ? 0 : 0.5 - free / 2;
+      t.frameY = portrait ? 0.4 : 0;
+      t.scale = portrait ? 0.48 : Math.min(0.78, free * 1.35);
+      this.crane = 0;
     }
     return this.target;
   }

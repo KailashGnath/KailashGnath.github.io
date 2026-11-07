@@ -49,6 +49,8 @@ export class Experience {
   onGiveUp: () => void = () => {};
   /** Dev only: pin a shape regardless of scroll. */
   debugShape = '';
+  /** Set while a lab report is open: show that project's shape beside the report. */
+  private focusShape = '';
 
   onFrame: (dt: number) => void = () => {};
   onShapeChange: (id: string) => void = () => {};
@@ -166,7 +168,7 @@ export class Experience {
 
     // Pick the shape for whatever owns most of the screen.
     if (!this.introActive) {
-      const shape = this.debugShape || shapeFor(this.ids[this.scroll.visibleIndex], this.state);
+      const shape = this.debugShape || this.focusShape || shapeFor(this.ids[this.scroll.visibleIndex], this.state);
       if (shape !== this.swarm.shape) {
         this.swarm.setShape(shape);
         this.onShapeChange(shape);
@@ -202,6 +204,12 @@ export class Experience {
   private near(name: string, f: { index: number; t: number }) {
     const i = this.ids.indexOf(name);
     return f.index === i || (f.index === i - 1 && f.t > 0.35);
+  }
+
+  /** Frame the swarm beside an open lab report, as that project's shape ('' to release). */
+  setFocus(shape: string) {
+    this.focusShape = shape;
+    this.rig.focus = !!shape;
   }
 
   setClusterOverride(i: number) {

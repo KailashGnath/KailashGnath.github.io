@@ -1,4 +1,5 @@
 import Lenis from 'lenis';
+import { stepInner } from './steps';
 
 export interface ChamberMetric {
   id: string;
@@ -71,6 +72,43 @@ export class Scroll {
     f.inner = clamp01(inner);
     f.t = clamp01(t);
     f.progress = clamp01(y / this.maxScroll);
+  }
+
+  /**
+   * Desktop only: when scrolling stops inside a pinned section, ease to the
+   * nearest item so you never rest halfway between two. The section's start
+   * and end are snap points too, so you can always carry on past it.
+   */
+  enableSnap(steps: Record<string, number>) {
+    const lenis = this.lenis;
+    if (!lenis || !matchMedia('(pointer: fine)').matches) return;
+    let timer = 0;
+    let snapping = false;
+    const snap = () => {
+      const y = window.scrollY;
+      const m = this.metrics.find((c) => steps[c.id] && y > c.enter + 2 && y < c.exit - 2);
+      if (!m) return;
+      const n = steps[m.id];
+      const span = m.exit - m.enter;
+      const points = [m.enter, m.exit];
+      for (let i = 0; i < n; i++) points.push(m.enter + stepInner(i, n) * span);
+      const target = points.reduce((best, p) => (Math.abs(p - y) < Math.abs(best - y) ? p : best), points[0]);
+      if (Math.abs(target - y) < 6) return;
+      snapping = true;
+      lenis.scrollTo(target, { duration: 0.6, easing: (t) => 1 - Math.pow(1 - t, 3), onComplete: () => (snapping = false) });
+    };
+    lenis.on('scroll', () => {
+      if (snapping) return;
+      clearTimeout(timer);
+      timer = window.setTimeout(snap, 180);
+    });
+    // A new wheel/keyboard gesture always wins over a snap in progress.
+    const cancel = () => {
+      snapping = false;
+      clearTimeout(timer);
+    };
+    window.addEventListener('wheel', cancel, { passive: true });
+    window.addEventListener('keydown', cancel);
   }
 
   /** Index of the chamber that currently owns most of the screen. */

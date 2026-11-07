@@ -1,3 +1,4 @@
+import { SCREENS_PER_ITEM, TOOLKIT_SCREENS_PER_ITEM } from '../core/steps';
 import { profile, stages, experiments, skillGroups, credentials, evolving, about } from '../content/resume';
 
 export const CHAMBERS = [
@@ -12,6 +13,9 @@ export const CHAMBERS = [
 ] as const;
 
 export const COPY_HINT = matchMedia('(pointer: coarse)').matches ? 'tap to copy' : 'click to copy';
+
+/** Height of a pinned section: one screen to read it, plus a short stretch per item. */
+const screens = (items: number, per = SCREENS_PER_ITEM) => (1 + items * per).toFixed(2);
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
@@ -57,7 +61,7 @@ function evolution() {
     )
     .join('');
   return `
-  <section id="evolution" class="chamber chamber--tall" style="--screens:${stages.length + 1}" aria-labelledby="evo-title">
+  <section id="evolution" class="chamber chamber--tall" style="--screens:${screens(stages.length)}" aria-labelledby="evo-title">
     <div class="sticky">
       <div class="panel panel--left">
         ${eyebrow(1)}
@@ -94,7 +98,7 @@ function experimentsSection() {
     )
     .join('');
   return `
-  <section id="experiments" class="chamber chamber--tall" style="--screens:${experiments.length + 1}" aria-labelledby="exp-title">
+  <section id="experiments" class="chamber chamber--tall" style="--screens:${screens(experiments.length)}" aria-labelledby="exp-title">
     <div class="sticky">
       <div class="panel panel--left">
         ${eyebrow(2)}
@@ -121,7 +125,7 @@ function toolkit() {
     )
     .join('');
   return `
-  <section id="toolkit" class="chamber chamber--tall" style="--screens:2.6" aria-labelledby="tk-title">
+  <section id="toolkit" class="chamber chamber--tall" style="--screens:${screens(skillGroups.length, TOOLKIT_SCREENS_PER_ITEM)}" aria-labelledby="tk-title">
     <div class="sticky">
       <div class="panel panel--left panel--narrow">
         ${eyebrow(3)}
@@ -150,7 +154,7 @@ function aboutSection() {
     .join('');
   const facts = about.facts.map((f) => `<li>${esc(f)}</li>`).join('');
   return `
-  <section id="about" class="chamber chamber--tall" style="--screens:${about.interests.length + 1}" aria-labelledby="about-title">
+  <section id="about" class="chamber chamber--tall" style="--screens:${screens(about.interests.length)}" aria-labelledby="about-title">
     <div class="sticky">
       <div class="panel panel--left">
         ${eyebrow(4)}
