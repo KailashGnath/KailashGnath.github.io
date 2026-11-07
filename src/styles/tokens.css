@@ -1,0 +1,22 @@
+:root {
+  --bg: #07080a;
+  --bg-2: #0c0e11;
+  --panel: rgba(12, 14, 17, 0.62);
+  --ink: #e8e6e1;
+  --ink-2: rgba(232, 230, 225, 0.72);
+  --ink-3: rgba(232, 230, 225, 0.48);
+  --line: rgba(232, 230, 225, 0.12);
+  --line-2: rgba(232, 230, 225, 0.22);
+  --signal: #6cf0ff;
+  --signal-dim: rgba(108, 240, 255, 0.16);
+  --amber: #ffb547;
+
+  --font-sans: 'Geist Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --gutter: clamp(20px, 6vw, 112px);
+  --hud: clamp(14px, 2vw, 28px);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius: 4px;
+  color-scheme: dark;
+}

@@ -1,0 +1,109 @@
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { background: var(--bg); -webkit-text-size-adjust: 100%; }
+html.scroll-locked, html.scroll-locked body { overflow: hidden; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+html.has-cursor, html.has-cursor * { cursor: none !important; }
+html.has-cursor input:not([type="checkbox"]):not([type="radio"]),
+html.has-cursor textarea,
+html.has-cursor [contenteditable] { cursor: text !important; }
+
+h1, h2, h3, p, ol, ul, dl, dd { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+a { color: inherit; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; }
+::selection { background: var(--signal); color: var(--bg); }
+
+.mono { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.accent { color: var(--signal); }
+.live { color: var(--amber); }
+.dim { color: var(--ink-3); }
+
+:focus-visible { outline: 1px solid var(--signal); outline-offset: 4px; border-radius: 2px; }
+
+.skip-link {
+  position: fixed; left: 16px; top: -60px; z-index: 100;
+  background: var(--signal); color: var(--bg); padding: 8px 14px;
+  font-family: var(--font-mono); font-size: 12px; text-decoration: none;
+}
+.skip-link:focus { top: 16px; }
+
+#webgl {
+  position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100lvh;
+  display: block; z-index: 0;
+}
+.fallback-bg {
+  display: none; position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(60vmax 60vmax at 75% 35%, rgba(108, 240, 255, 0.12), transparent 60%),
+    radial-gradient(40vmax 40vmax at 20% 80%, rgba(255, 181, 71, 0.06), transparent 60%),
+    var(--bg);
+}
+.no-webgl #webgl { display: none; }
+.no-webgl .fallback-bg { display: block; }
+
+/* Faint scanlines + a left scrim for text legibility over the scene. */
+.scanlines {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(7, 8, 10, 0.78) 0%, rgba(7, 8, 10, 0.35) 34%, transparent 58%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 3px);
+}
+@media (max-width: 760px) {
+  .scanlines {
+    background:
+      linear-gradient(0deg, rgba(7, 8, 10, 0.95) 0%, rgba(7, 8, 10, 0.8) 48%, transparent 72%),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 3px);
+  }
+}
+
+main { position: relative; z-index: 2; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 14px;
+  height: 46px; padding: 0 18px 0 20px;
+  border: 1px solid var(--line-2); border-radius: var(--radius);
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+  transition: border-color 0.3s, background 0.3s, color 0.3s;
+  position: relative; overflow: hidden;
+}
+.btn__key { opacity: 0.6; }
+.btn--primary { border-color: var(--signal); color: var(--signal); }
+.btn--primary:not(:disabled):hover { background: var(--signal); color: var(--bg); }
+.btn--primary:disabled { opacity: 0.25; }
+.btn--ghost:hover { border-color: var(--signal); color: var(--signal); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips li {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em;
+  padding: 4px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-2);
+  background: rgba(7, 8, 10, 0.4);
+}
+
+.live-dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--amber); margin-right: 8px; vertical-align: 1px;
+  box-shadow: 0 0 10px var(--amber);
+  animation: blink 1.6s infinite;
+}
+@keyframes blink { 50% { opacity: 0.3; } }
+
+.reduced-motion *, .reduced-motion *::before, .reduced-motion *::after {
+  animation-duration: 0.001s !important; animation-iteration-count: 1 !important;
+  transition-duration: 0.001s !important;
+}

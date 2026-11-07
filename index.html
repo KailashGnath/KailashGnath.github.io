@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Kailash G — React Native Engineer</title>
+    <meta name="description" content="Kailash G — React Native engineer in Kochi, India. 4.5+ years building and shipping iOS and Android apps with React Native, Expo and TypeScript. Step into the lab." />
+    <meta name="theme-color" content="#07080A" />
+    <meta property="og:title" content="KAILASH.LAB — Kailash G, React Native Engineer" />
+    <meta property="og:description" content="A digital laboratory of an engineer who keeps building, learning and evolving." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>document.documentElement.classList.add('is-intro');</script>
+    <style>
+      /* Inline so the first paint is never blank or broken-looking. */
+      html, body { background: #07080a; margin: 0; }
+      .is-intro main, .is-intro .hud, .is-intro .scanlines { opacity: 0; }
+      main, .hud, .scanlines { transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+      .intro { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; pointer-events: none; color: #e8e6e1; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; }
+      .intro__name { font-weight: 500; font-size: clamp(44px, 9vw, 132px); letter-spacing: 0.02em; line-height: 1; opacity: 0.9; transition: opacity 0.7s ease, filter 0.7s ease, letter-spacing 1.2s cubic-bezier(0.22, 1, 0.36, 1); }
+      .intro__bar { width: 120px; height: 1px; background: rgba(232, 230, 225, 0.12); overflow: hidden; transition: opacity 0.4s; }
+      .intro__bar i { display: block; height: 100%; width: 40%; background: #6cf0ff; animation: intro-bar 1.1s infinite ease-in-out; }
+      @keyframes intro-bar { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+      .intro__hint { position: absolute; bottom: 12vh; margin: 0; font: 11px/1 ui-monospace, 'SFMono-Regular', Menlo, monospace; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(232, 230, 225, 0.48); opacity: 0; transition: opacity 0.6s; }
+      .intro__hint span { color: #6cf0ff; margin: 0 6px; }
+      .intro.is-handoff .intro__name { opacity: 0; filter: blur(8px); letter-spacing: 0.3em; }
+      .intro.is-handoff .intro__bar { opacity: 0; }
+      .intro.is-hint .intro__hint { opacity: 1; }
+      .intro.is-gone { opacity: 0; transition: opacity 0.6s; }
+      .intro__hint b { font-weight: inherit; }
+      .intro__touch { display: none; }
+      @media (pointer: coarse) { .intro__fine { display: none; } .intro__touch { display: inline; } }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <canvas id="webgl" aria-hidden="true"></canvas>
+    <div class="fallback-bg" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+
+    <!-- First paint: the name, before any JS. The particles take it over. -->
+    <div id="intro" class="intro" aria-hidden="true">
+      <div class="intro__name">KAILASH</div>
+      <div class="intro__bar"><i></i></div>
+      <p class="intro__hint"><b class="intro__fine">move through it</b><b class="intro__touch">touch it</b> <span>·</span> scroll to skip</p>
+    </div>
+
+    <!-- HUD -->
+    <div class="hud" aria-hidden="false">
+      <div class="hud__corner hud__corner--tl"></div>
+      <div class="hud__corner hud__corner--tr"></div>
+      <div class="hud__corner hud__corner--bl"></div>
+      <div class="hud__corner hud__corner--br"></div>
+
+      <header class="hud__top">
+        <a class="hud__brand mono" href="#hero" data-cursor>KAILASH<span class="accent">.</span>LAB</a>
+        <div class="hud__meta mono">
+          <span class="hud__clock" title="Local time in Kochi">KOCHI --:--:--</span>
+          <button class="hud__btn hud__sound" type="button" aria-pressed="false" data-cursor>
+            <span class="hud__sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span class="hud__sound-label">SND OFF</span>
+          </button>
+          <button class="hud__btn hud__console-btn" type="button" data-cursor aria-label="Open lab console">&gt;_</button>
+        </div>
+      </header>
+
+      <nav class="hud__nav" aria-label="Chambers"></nav>
+
+      <footer class="hud__bottom mono" aria-hidden="true">
+        <div class="hud__section"><span class="hud__section-code">CH.00</span> <span class="hud__section-name">HELLO</span></div>
+        <div class="hud__readout">
+          <span class="hud__signal"><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="hud__version">BUILD v4.5</span>
+          <span class="hud__progress">000%</span>
+        </div>
+      </footer>
+    </div>
+
+    <div class="shape-notes" aria-hidden="true"><svg></svg></div>
+
+    <div class="cursor" aria-hidden="true"><div class="cursor__ring"></div><div class="cursor__dot"></div><div class="cursor__label mono"></div></div>
+
+    <main id="main"></main>
+
+    <dialog class="report" aria-labelledby="report-title"></dialog>
+
+    <div class="console" role="dialog" aria-modal="false" aria-label="Lab console" hidden>
+      <div class="console__head mono"><span>lab.console</span><button type="button" class="console__close" aria-label="Close console">esc</button></div>
+      <div class="console__out mono" aria-live="polite"></div>
+      <form class="console__form mono"><span class="accent">kailash@lab</span><span class="dim">:~$</span><input class="console__input" autocomplete="off" spellcheck="false" aria-label="Console command" /></form>
+    </div>
+
+    <!-- Safety net: if the app can't start (very old browser, blocked script), show a plain page instead of a stuck intro. -->
+    <div id="boot-fallback" hidden style="position:relative;z-index:60;padding:14vh 8vw;color:#E8E6E1;font-family:system-ui,sans-serif;max-width:720px">
+      <h1 style="font-weight:300;font-size:44px;margin:0 0 12px">Kailash G</h1>
+      <p style="color:rgba(232,230,225,.72)">React Native engineer in Kochi, India. 4.5+ years building and shipping iOS and Android apps with React Native, Expo and TypeScript.</p>
+      <p style="color:rgba(232,230,225,.72)">This browser couldn't run the interactive version — try an up-to-date browser for the full experience.</p>
+      <p><a style="color:#6CF0FF" href="mailto:kailashg4315215@gmail.com">kailashg4315215@gmail.com</a> · <a style="color:#6CF0FF" href="https://www.linkedin.com/in/kailash-g-3a8b1c9d1e5">LinkedIn</a> · <a style="color:#6CF0FF" href="https://github.com/kailashGN">GitHub</a></p>
+    </div>
+    <script>
+      setTimeout(function () {
+        if (window.__labStarted) return;
+        var i = document.getElementById('intro');
+        if (i) i.remove();
+        document.documentElement.classList.remove('is-intro');
+        document.getElementById('boot-fallback').hidden = false;
+      }, 8000);
+    </script>
+
+    <noscript>
+      <section style="padding:10vh 8vw;color:#E8E6E1;font-family:system-ui;max-width:720px">
+        <h1>Kailash G — React Native Engineer</h1>
+        <p>4.5+ years building and shipping iOS and Android apps with React Native, Expo and TypeScript. Kochi, India.</p>
+        <p><a style="color:#6CF0FF" href="mailto:kailashg4315215@gmail.com">kailashg4315215@gmail.com</a> · <a style="color:#6CF0FF" href="https://www.linkedin.com/in/kailash-g-3a8b1c9d1e5">LinkedIn</a> · <a style="color:#6CF0FF" href="https://github.com/kailashGN">GitHub</a></p>
+      </section>
+    </noscript>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
