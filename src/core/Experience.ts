@@ -226,6 +226,11 @@ export class Experience {
     return out;
   }
 
+  /** 0..1 — how visible the swarm currently is (dims during portrait handoffs). */
+  get visibility() {
+    return this.rig.current.opacity;
+  }
+
   get aspect() {
     return this.camera.aspect;
   }

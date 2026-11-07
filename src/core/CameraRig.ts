@@ -114,6 +114,9 @@ export class CameraRig {
       if (this.reduced) t = frame.t < 0.5 ? 0 : 1; // cut instead of travel
       lerpShot(a, b, t, this.target);
       if (!this.reduced) this.crane = Math.sin(Math.PI * frame.t) * 0.6;
+      // Portrait: the outgoing text scrolls up through the swarm's area on its way out.
+      // Fade the swarm back while it passes so the words stay readable.
+      if (portrait) this.target.opacity *= 1 - 0.82 * Math.sin(Math.PI * frame.t);
     } else {
       lerpShot(a, a, 0, this.target);
     }

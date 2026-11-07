@@ -77,6 +77,8 @@ export class ShapeNotes {
 
   /** Re-pin to the (moving, swaying) shape every frame. */
   update() {
+    // Notes fade with the swarm (e.g. while text scrolls over it on phones).
+    this.root.style.opacity = String(Math.min(1, this.exp.visibility * 1.2));
     if (!this.notes.length) return;
     const frame = this.exp.swarm.frame;
     for (const n of this.notes) {
