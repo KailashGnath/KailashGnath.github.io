@@ -72,6 +72,7 @@
 .cursor { position: fixed; left: 0; top: 0; z-index: 2147483647; pointer-events: none; opacity: 0; transition: opacity 0.25s; will-change: transform; }
 .cursor.is-visible { opacity: 1; }
 .cursor.is-native { opacity: 0 !important; }
+.cursor__trail { position: absolute; left: 0; top: 0; will-change: transform; }
 .cursor__ring {
   position: absolute; width: 30px; height: 30px; left: -15px; top: -15px;
   border: 1px solid rgba(232, 230, 225, 0.75); border-radius: 50%;

@@ -63,16 +63,31 @@ let labels: StarLabels | null = null;
 
 const returning = memory.visits > 1;
 
+/** The loading screen's status line shows the real boot step. */
+const statusEl = document.querySelector<HTMLElement>('#intro [data-status]');
+const bootStatus = (text: string) => {
+  if (statusEl) statusEl.textContent = text;
+};
+// Let the status paint before the next (possibly blocking) step starts.
+const nextPaint = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
+
 async function bootRenderer() {
   if (!webgl) return;
   try {
     // The name is sampled from Geist; give the font a moment, but never wait long.
+    bootStatus('loading type');
     await Promise.race([document.fonts.load('500 96px "Geist Sans"'), new Promise((r) => setTimeout(r, 900))]);
+    bootStatus('building the scene');
     const { Experience } = await import('./core/Experience');
+    bootStatus('growing ' + getQuality().particles.toLocaleString() + ' particles');
+    await nextPaint();
     const e = new Experience(document.getElementById('webgl') as HTMLCanvasElement, getQuality(), scroll, reduced, hueShiftFor(memory.visits));
     if (reduced) e.swarm.snap();
     else e.setIntro(true);
+    bootStatus('compiling shaders');
+    await nextPaint();
     await e.warmup();
+    bootStatus('entering');
     e.start();
     exp = e;
   } catch (err) {

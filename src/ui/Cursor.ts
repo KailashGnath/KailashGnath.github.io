@@ -8,6 +8,8 @@
 export class Cursor {
   private el = document.querySelector<HTMLElement>('.cursor')!;
   private label = this.el.querySelector<HTMLElement>('.cursor__label')!;
+  /** The ring trails slightly behind; the dot (the container) is always exactly on the pointer. */
+  private trail = this.el.querySelector<HTMLElement>('.cursor__trail')!;
   private root = document.documentElement;
   private x = innerWidth / 2;
   private y = innerHeight / 2;
@@ -38,6 +40,8 @@ export class Cursor {
         this.x = this.tx;
         this.y = this.ty;
       }
+      // Place the dot right away, in the event itself: no waiting, no smoothing.
+      this.place();
       this.el.classList.add('is-visible');
       // Watchdog: the loop must have ticked recently for the custom cursor to own the screen.
       const alive = performance.now() - this.lastTick < 300;
@@ -95,9 +99,15 @@ export class Cursor {
     const dt = Math.min(0.05, this.last ? (now - this.last) / 1000 : 1 / 60);
     this.last = now;
     this.lastTick = performance.now();
-    const k = 1 - Math.exp(-dt * 22);
+    // Only the ring eases — quickly — so it reads as a light echo, not weight.
+    const k = 1 - Math.exp(-dt * 48);
     this.x += (this.tx - this.x) * k;
     this.y += (this.ty - this.y) * k;
-    this.el.style.transform = `translate3d(${this.x.toFixed(1)}px, ${this.y.toFixed(1)}px, 0)`;
+    this.place();
   };
+
+  private place() {
+    this.el.style.transform = `translate3d(${this.tx}px, ${this.ty}px, 0)`;
+    this.trail.style.transform = `translate3d(${(this.x - this.tx).toFixed(1)}px, ${(this.y - this.ty).toFixed(1)}px, 0)`;
+  }
 }
