@@ -112,6 +112,7 @@ export class Experience {
 
   /** Compile shaders up-front so the first frame doesn't hitch. */
   async warmup() {
+    this.swarm.warm();
     await this.renderer.compileAsync(this.scene, this.camera);
   }
 

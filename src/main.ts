@@ -81,6 +81,13 @@ async function bootRenderer() {
     const { Experience } = await import('./core/Experience');
     bootStatus('growing ' + getQuality().particles.toLocaleString() + ' particles');
     await nextPaint();
+    // Build the two shapes the intro needs one at a time, letting the loader breathe in between.
+    const { getShape } = await import('./world/shapes/library');
+    const n = Math.round(Math.sqrt(getQuality().particles)) ** 2;
+    for (const id of ['name', 'phone']) {
+      getShape(id, n);
+      await nextPaint();
+    }
     const e = new Experience(document.getElementById('webgl') as HTMLCanvasElement, getQuality(), scroll, reduced, hueShiftFor(memory.visits));
     if (reduced) e.swarm.snap();
     else e.setIntro(true);
@@ -117,6 +124,8 @@ function enter() {
   observeTerminal(reduced);
 }
 enter();
+// Pre-build the other shapes once the intro has settled, so they never steal intro frames.
+setTimeout(() => exp?.swarm.prewarm(), 1500);
 
 
 // --- Wiring -------------------------------------------------------------------
@@ -256,6 +265,7 @@ else {
     if (!exp) return;
     exp.setIntro(false);
     wireScene(exp);
+    setTimeout(() => exp?.swarm.prewarm(), 1500);
   });
 }
 

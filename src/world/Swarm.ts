@@ -291,6 +291,15 @@ export class Swarm {
     this.points.renderOrder = 2;
 
     this.setShape('phone');
+  }
+
+  /** Run the simulation once so its shaders compile now, not on the first visible frame. */
+  warm() {
+    this.gpu.compute();
+  }
+
+  /** Build the remaining shapes in idle time. Call after the intro, so it never steals intro frames. */
+  prewarm() {
     prewarm(this.count);
   }
 

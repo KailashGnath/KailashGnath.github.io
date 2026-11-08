@@ -11,8 +11,9 @@ export interface QualitySettings {
 }
 
 const PRESETS: Record<Tier, Omit<QualitySettings, 'tier'>> = {
-  high: { particles: 22000, dust: 1600, maxDpr: 2, bloom: true, chromatic: true, msaa: 4 },
-  medium: { particles: 14000, dust: 1000, maxDpr: 1.5, bloom: true, chromatic: true, msaa: 2 },
+  // Soft, glowing particles don't need 2x pixels or MSAA; dropping both keeps the intro smooth.
+  high: { particles: 22000, dust: 1600, maxDpr: 1.5, bloom: true, chromatic: true, msaa: 0 },
+  medium: { particles: 14000, dust: 1000, maxDpr: 1.25, bloom: true, chromatic: true, msaa: 0 },
   // Modern phones: dense enough that shapes read crisply on a small screen.
   phone: { particles: 13000, dust: 700, maxDpr: 1.75, bloom: true, chromatic: false, msaa: 0 },
   low: { particles: 9000, dust: 500, maxDpr: 1.25, bloom: true, chromatic: false, msaa: 0 },
